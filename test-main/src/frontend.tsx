@@ -5,16 +5,22 @@
  * It is included in `src/index.html`.
  */
 
-import { createRoot } from "react-dom/client";
-import { App } from "./App";
+import {createRoot} from "react-dom/client";
+import {App} from "./App";
+import {DevSupport} from "@react-buddy/ide-toolbox";
+import {ComponentPreviews, useInitial} from "@/dev";
 
 function start() {
-	const root = createRoot(document.getElementById("root")!);
-	root.render(<App />);
+    const root = createRoot(document.getElementById("root")!);
+    root.render(<DevSupport ComponentPreviews={ComponentPreviews}
+                            useInitialHook={useInitial}
+    >
+        <App/>
+    </DevSupport>);
 }
 
 if (document.readyState === "loading") {
-	document.addEventListener("DOMContentLoaded", start);
+    document.addEventListener("DOMContentLoaded", start);
 } else {
-	start();
+    start();
 }
