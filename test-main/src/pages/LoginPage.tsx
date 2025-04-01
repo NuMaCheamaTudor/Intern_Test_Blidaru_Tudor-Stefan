@@ -1,16 +1,18 @@
+// src/pages/LoginPage.tsx + RegisterPage.tsx (cu API call)
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function LoginPage() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const navigate = useNavigate();
 
-    const handleLogin = (e: React.FormEvent<HTMLFormElement>) => {
+    const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
-        // TODO: Send login request
+        // TODO: Implement login logic
         console.log("Login", { email, password });
     };
 
@@ -28,14 +30,14 @@ export default function LoginPage() {
                     <Input
                         placeholder="Email"
                         value={email}
-                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
+                        onChange={(e) => setEmail(e.target.value)}
                         type="email"
                         required
                     />
                     <Input
                         placeholder="Password"
                         value={password}
-                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
+                        onChange={(e) => setPassword(e.target.value)}
                         type="password"
                         required
                     />
@@ -44,7 +46,7 @@ export default function LoginPage() {
                     </Button>
                 </form>
                 <p className="mt-4 text-sm text-center text-gray-500">
-                    Don't have an account?{' '}
+                    Don’t have an account?{' '}
                     <Link to="/register" className="text-blue-600 hover:underline">
                         Sign up
                     </Link>

@@ -27,10 +27,10 @@ export function seedDatabase(
 	if (clearExisting) {
 		console.log("🗑️ Clearing existing data...");
 		db.exec(`
-      DROP TABLE IF EXISTS transactions;
-      DROP TABLE IF EXISTS coins;
-      DROP TABLE IF EXISTS clients;
-    `);
+			DROP TABLE IF EXISTS transactions;
+			DROP TABLE IF EXISTS coins;
+			DROP TABLE IF EXISTS clients;
+		`);
 	}
 
 	// Initialize database schema
@@ -105,9 +105,9 @@ function seedClients(db: Database, count: number): number[] {
 
 	const clientIds: number[] = [];
 	const insertClient = db.prepare(`
-    INSERT INTO clients (name, email, phone, address) 
-    VALUES (?, ?, ?, ?)
-  `);
+		INSERT INTO clients (name, email, phone, address)
+		VALUES (?, ?, ?, ?)
+	`);
 
 	db.transaction(() => {
 		for (let i = 0; i < count; i++) {
@@ -120,7 +120,7 @@ function seedClients(db: Database, count: number): number[] {
 			const address = faker.location.streetAddress({ useFullAddress: true });
 
 			const info = insertClient.run(name, email, phone, address);
-			clientIds.push(Number(info.lastInsertId));
+			clientIds.push(Number(info.lastInsertRowid));
 		}
 	})();
 
@@ -135,9 +135,9 @@ function seedCoins(db: Database, count: number, clientCount: number): number[] {
 
 	const coinIds: number[] = [];
 	const insertCoin = db.prepare(`
-    INSERT INTO coins (client_id, bit1, bit2, bit3, value) 
-    VALUES (?, ?, ?, ?, ?)
-  `);
+		INSERT INTO coins (client_id, bit1, bit2, bit3, value)
+		VALUES (?, ?, ?, ?, ?)
+	`);
 
 	// Track used values to ensure each BitSlow has a unique value
 	const usedValues = new Set<number>();
@@ -180,7 +180,7 @@ function seedCoins(db: Database, count: number, clientCount: number): number[] {
 			usedValues.add(value);
 
 			const info = insertCoin.run(clientId, bit1, bit2, bit3, value);
-			coinIds.push(Number(info.lastInsertId));
+			coinIds.push(Number(info.lastInsertRowid));
 		}
 	})();
 
@@ -225,9 +225,9 @@ function seedTransactions(
 	console.log(`💸 Generating ${count} random transactions...`);
 
 	const insertTransaction = db.prepare(`
-    INSERT INTO transactions (coin_id, seller_id, buyer_id, amount, transaction_date) 
-    VALUES (?, ?, ?, ?, ?)
-  `);
+		INSERT INTO transactions (coin_id, seller_id, buyer_id, amount, transaction_date)
+		VALUES (?, ?, ?, ?, ?)
+	`);
 
 	// Track which BitSlows have been sold (for realistic chain of ownership)
 	const coinOwners: Record<number, number | null> = {};
@@ -251,8 +251,11 @@ function seedTransactions(
 			} while (buyerId === sellerId);
 
 			// Get BitSlow value
+			interface Coin {
+				value: number;
+			}
 			const coinValue =
-				db.query("SELECT value FROM coins WHERE coin_id = ?").get(coinId)
+				(db.query("SELECT value FROM coins WHERE coin_id = ?").get(coinId) as Coin)
 					?.value || 0;
 
 			// Use exact BitSlow value as the transaction amount
